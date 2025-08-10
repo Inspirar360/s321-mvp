@@ -1,13 +1,20 @@
-const CACHE_NAME = 's321-mvp-v1';
+const CACHE_NAME = 's321-mvp-v2';
+
 const ASSETS = [
-  '/s321-mvp/',
-  '/s321-mvp/index.html',
-  '/s321-mvp/icons/icon-192.png',
-  '/s321-mvp/icons/icon-512.png'
+  '',                    // raíz del scope (equivale a /s321-mvp/)
+  'index.html',
+  'manifest.json',
+  'pwa-icons/icon-192.png',
+  'pwa-icons/icon-512.png',
+  'pwa-icons/maskable-512.png'
 ];
 
+const abs = (p) => new URL(p, self.registration.scope).toString();
+
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then((c) => c.addAll(ASSETS)));
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((c) => c.addAll(ASSETS.map(abs)))
+  );
   self.skipWaiting();
 });
 
@@ -22,6 +29,12 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+
+  const url = new URL(event.request.url);
+
+  // Solo mismo origen y dentro del scope del SW (GitHub Pages: /<repo>/...)
+  if (url.origin !== location.origin || !url.href.startsWith(self.registration.scope)) return;
+
   event.respondWith(
     caches.match(event.request).then((cached) =>
       cached ||
@@ -29,7 +42,7 @@ self.addEventListener('fetch', (event) => {
         const copy = resp.clone();
         caches.open(CACHE_NAME).then((c) => c.put(event.request, copy));
         return resp;
-      }).catch(() => caches.match('/s321-mvp/index.html'))
+      }).catch(() => caches.match(abs('index.html')))
     )
   );
 });
