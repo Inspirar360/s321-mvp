@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sistema 3-2-1</title>
 
-    <!-- Importante: rutas con el nombre del repo -->
-    <link rel="manifest" href="/s321-mvp/manifest.json" />
+    <!-- Rutas relativas -->
+    <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#0f172a" />
 
     <!-- iOS -->
-    <link rel="apple-touch-icon" href="/s321-mvp/icons/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="pwa-icons/icon-192.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="3-2-1" />
@@ -105,12 +105,13 @@
 
       load();
 
-      // Registro del Service Worker con ruta del repo
+      // Registro del Service Worker con ruta relativa
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/s321-mvp/sw.js').catch(console.error);
+          navigator.serviceWorker.register('sw.js').catch(console.error);
         });
       }
     </script>
   </body>
 </html>
+
