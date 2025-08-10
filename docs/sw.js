@@ -1,4 +1,4 @@
-const CACHE_NAME = 's321-mvp-v3';
+const CACHE_NAME = 's321-mvp-v4';
 
 const ASSETS = [
   '',                    // raíz del scope (equivale a /s321-mvp/)
