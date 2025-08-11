@@ -496,7 +496,7 @@ h2{margin-top:0} .item{margin:12px 0} .lbl{color:#64748b;font-size:14px}</style>
   <div class="item"><div class="lbl">Ritual</div><div>${S.ritualSel||''} ${S.ritualExtra||''}</div></div>
   ${conLogro?`<div class="item"><div class="lbl">Revisión</div><div>${(S.reflex||'').replace(/\n/g,'<br>')}</div></div>`:''}
 </div>
-<script>window.print()</script>
+<script>window.print()<\/script>
 </body></html>`;
       const w = window.open('','_blank'); w.document.write(d); w.document.close();
     }
