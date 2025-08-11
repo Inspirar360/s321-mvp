@@ -5,20 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sistema 3-2-1</title>
 
-  <!-- Manifest versionado y color -->
-  <link rel="manifest" href="manifest.json?v=8" />
+  <!-- Manifest versionado -->
+  <link rel="manifest" href="manifest.json?v=10" />
   <meta name="theme-color" content="#0f172a" />
 
-  <!-- iOS (opcional: agregá pwa-icons/apple-180.png si lo tenés) -->
+  <!-- iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="3-2-1" />
-  <!-- <link rel="apple-touch-icon" sizes="180x180" href="pwa-icons/apple-180.png" /> -->
 
   <style>
-    :root{
-      --bg:#f8fafc; --fg:#0f172a; --muted:#64748b; --card:#fff; --b:#e2e8f0; --pri:#0f172a;
-    }
+    :root{--bg:#f8fafc;--fg:#0f172a;--muted:#64748b;--card:#fff;--b:#e2e8f0;--pri:#0f172a;}
     *{box-sizing:border-box}
     body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--fg)}
     .wrap{max-width:640px;margin:0 auto;padding:16px}
@@ -31,28 +28,19 @@
     .row{display:grid;gap:12px}
     .btn{width:100%;padding:12px 16px;border:0;border-radius:10px;background:var(--pri);color:#fff;font-weight:600;cursor:pointer}
     .btn.outline{background:#fff;color:var(--fg);border:1px solid var(--b)}
-    .muted.sm{font-size:12px}
     .hide{display:none}
+    .muted.sm{font-size:12px}
     .pill{font-size:12px;padding:4px 8px;border-radius:999px;background:#eef2ff;color:#3730a3;display:inline-block;margin-left:8px}
     .section-title{display:flex;align-items:center;justify-content:space-between}
-    .section-title small{color:var(--muted)}
-    /* Modal */
     .modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.6);display:none;align-items:center;justify-content:center;z-index:50}
     .modal{background:#fff;border-radius:16px;max-width:560px;width:92%;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
     .modal h3{margin:0 0 8px}
-    .center{text-align:center}
     .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    /* Banner nueva versión */
+    .center{text-align:center}
+    .overlay{position:fixed;inset:0;background:rgba(255,255,255,.85);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:40}
     .update-banner{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 14px;border-radius:12px;display:none;z-index:60}
     .update-banner button{margin-left:10px}
-    /* Bloqueo (autodestrucción/ventanas) */
-    .overlay{position:fixed;inset:0;background:rgba(255,255,255,.8);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:40}
-    .overlay .modal{box-shadow:none}
-    /* Tarjeta imprimible */
-    @media print{
-      body{background:#fff}
-      .no-print{display:none!important}
-    }
+    @media print{.no-print{display:none!important}}
   </style>
 </head>
 <body>
@@ -60,43 +48,38 @@
     <h1>Sistema 3-2-1 <span id="badges" class="pill no-print"></span></h1>
     <p class="muted">MVP instalable. Define 3 prioridades (micro-pasos), respeta ventanas y guardá/compartí. La app es un puente: a los 30 días se desactiva.</p>
 
-    <!-- Config rápida -->
+    <!-- Config -->
     <div class="card row no-print">
       <div class="section-title">
-        <strong>Configuración breve</strong>
+        <strong>Configuración</strong>
         <small id="tz-info"></small>
       </div>
-      <input id="partner" placeholder="Contacto de partner (email o teléfono, 1 máximo)" />
+      <input id="partner" placeholder="Contacto partner (email o teléfono, 1 máx.)" />
       <div class="grid2">
-        <button class="btn outline" id="btn-export">Exportar datos</button>
-        <button class="btn outline" id="btn-import">Importar datos</button>
+        <button class="btn outline" id="btn-export">Exportar snapshot</button>
+        <button class="btn outline" id="btn-import">Importar snapshot</button>
       </div>
-      <p class="muted sm">Tip: si viajás, podés fijar una zona horaria (ej. <code>America/Argentina/Buenos_Aires</code>).</p>
       <div class="grid2">
-        <input id="tz" placeholder="Zona horaria (vacío = automática)" />
+        <button class="btn outline" id="btn-export30">Exportar últimos 30 días</button>
+        <button class="btn outline" id="btn-export30txt">Exportar 30 días (TXT)</button>
+      </div>
+      <p class="muted sm">Zona horaria (vacío = automática). Útil si viajás.</p>
+      <div class="grid2">
+        <input id="tz" placeholder="Ej: America/Argentina/Buenos_Aires" />
         <button class="btn outline" id="save-tz">Guardar zona</button>
       </div>
     </div>
 
-    <!-- Pantalla Mañana -->
+    <!-- Mañana -->
     <section id="sec-man" class="card row">
       <div class="section-title">
         <strong>🌅 Mañana (3’)</strong>
         <small>Ventana: libre (recomendado al iniciar el día)</small>
       </div>
 
-      <div>
-        <label>1 cosa estratégica (mueve la aguja)</label>
-        <input id="p1" maxlength="60" placeholder="Ej: Bajar borrador del informe (título + esquema)" />
-      </div>
-      <div>
-        <label>1 cosa operativa (necesaria hoy)</label>
-        <input id="p2" maxlength="60" placeholder="Ej: Enviar 3 correos clave (asunto listo)" />
-      </div>
-      <div>
-        <label>1 cosa de bienestar</label>
-        <input id="p3" maxlength="60" placeholder="Ej: Caminar 10’ al sol" />
-      </div>
+      <div><label>1 cosa estratégica</label><input id="p1" maxlength="60" placeholder="Ej: Borrador informe (título + esquema)" /></div>
+      <div><label>1 cosa operativa</label><input id="p2" maxlength="60" placeholder="Ej: Enviar 3 correos (asunto listo)" /></div>
+      <div><label>1 cosa de bienestar</label><input id="p3" maxlength="60" placeholder="Ej: Caminar 10’ al sol" /></div>
 
       <button class="btn outline" id="btn-deal">Simplificar con DEAL</button>
 
@@ -110,10 +93,10 @@
         <button class="btn outline" id="btn-compartir">Compartir con partner</button>
       </div>
       <button class="btn outline" id="btn-tarjeta">Generar tarjeta 3-2-1</button>
-      <p class="muted sm">Escribí micro-pasos. Ej: “Abrir doc y escribir título” en vez de “Hacer informe”.</p>
+      <p class="muted sm">Escribí micro-pasos. Ej: “Abrir doc y escribir título”.</p>
     </section>
 
-    <!-- Pantalla Mediodía -->
+    <!-- Mediodía -->
     <section id="sec-med" class="card row">
       <div class="section-title">
         <strong>☀️ Mediodía (1’)</strong>
@@ -126,25 +109,18 @@
       </div>
       <button class="btn outline" id="desconc-med">Me desconcentré (ROE)</button>
       <button class="btn outline" id="ver-tarjeta">Ver mi tarjeta 3-2-1</button>
-      <p class="muted sm">Esta pantalla solo aparece entre 12–14. Si ya respondiste, volvés al foco.</p>
     </section>
 
-    <!-- Pantalla Noche -->
+    <!-- Noche -->
     <section id="sec-noc" class="card row">
       <div class="section-title">
         <strong>🌙 Noche (3’)</strong>
         <small>Ventana: 20:00–22:00 (hora local)</small>
       </div>
 
-      <div>
-        <label><input type="checkbox" id="chk1" /> ¿Completaste la estratégica?</label>
-      </div>
-      <div>
-        <label><input type="checkbox" id="chk2" /> ¿Completaste la operativa?</label>
-      </div>
-      <div>
-        <label><input type="checkbox" id="chk3" /> ¿Hiciste bienestar?</label>
-      </div>
+      <label><input type="checkbox" id="chk1" /> ¿Completaste la estratégica?</label>
+      <label><input type="checkbox" id="chk2" /> ¿Completaste la operativa?</label>
+      <label><input type="checkbox" id="chk3" /> ¿Hiciste bienestar?</label>
 
       <textarea id="reflex" placeholder="Mini-revisión: qué postergaste, qué sentiste, qué harás distinto mañana…"></textarea>
 
@@ -182,7 +158,7 @@
         </div>
         <div class="grid2" style="margin-top:10px">
           <button class="btn" id="roe-hacer">Hacer ahora (5’)</button>
-          <button class="btn outline" id="roe-reprog">Reprogramar en micropasos</button>
+          <button class="btn outline" id="roe-reprog">Reprogramar en micro-pasos</button>
         </div>
         <button class="btn outline" style="margin-top:10px" data-close="#modal-roe">Cerrar</button>
       </div>
@@ -227,7 +203,7 @@
       </div>
     </div>
 
-    <!-- Overlays (bloqueos por ventanas/autodestrucción) -->
+    <!-- Overlays -->
     <div id="window-overlay" class="overlay">
       <div class="modal center">
         <h3>No disponible ahora</h3>
@@ -239,9 +215,9 @@
     <div id="destroy-overlay" class="overlay">
       <div class="modal center">
         <h3>Fin del puente (30 días)</h3>
-        <p class="muted">La app se desactiva para ayudarte a pasar al sistema físico. Podés exportar tus datos.</p>
+        <p class="muted">La app se desactiva para ayudarte a pasar al sistema físico. Exportá tus datos.</p>
         <div class="grid2">
-          <button class="btn outline" id="exp-from-destroy">Exportar</button>
+          <button class="btn outline" id="exp-from-destroy">Exportar 30 días</button>
           <button class="btn" id="destroy-ok">Entendido</button>
         </div>
       </div>
@@ -255,238 +231,142 @@
   </div>
 
   <script>
-    // ==========================
-    //  Utilidades de tiempo local
-    // ==========================
+    // ===== Zona horaria (local del usuario o forzada)
     const TZ = localStorage.getItem('tz') || Intl.DateTimeFormat().resolvedOptions().timeZone;
     const nowTZ = () => new Date(new Date().toLocaleString('en-US', { timeZone: TZ }));
-    const dayKey = () => {
-      const d = nowTZ();
-      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    };
     const minutesNowTZ = () => { const d = nowTZ(); return d.getHours()*60 + d.getMinutes(); };
-    const isBetweenLocal = (hStart, hEnd) => { const m = minutesNowTZ(); return m >= hStart*60 && m < hEnd*60; };
+    const dayKey = () => { const d=nowTZ(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
+    const isBetweenLocal = (hStart,hEnd)=>{ const m=minutesNowTZ(); return m>=hStart*60 && m<hEnd*60; };
     document.getElementById('tz-info').textContent = `Zona: ${TZ}`;
 
-    // ==========================
-    //  Estado y persistencia
-    // ==========================
+    // ===== Estado base + diario por día
     const KEY = 's321_state';
-    const read = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; } };
-    const write = (obj) => localStorage.setItem(KEY, JSON.stringify(obj));
-    let S = read();
-    if (!S.install_ts){ S.install_ts = Date.now(); write(S); }
+    const KEY_D = 's321_diary';
+    const read = ()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return{}}};
+    const write = (o)=>localStorage.setItem(KEY,JSON.stringify(o));
+    const readDiary = ()=>{try{return JSON.parse(localStorage.getItem(KEY_D)||'{}')}catch{return{}}};
+    const writeDiary = (o)=>localStorage.setItem(KEY_D,JSON.stringify(o));
+    let S = read(); if(!S.install_ts){ S.install_ts=Date.now(); write(S); }
+    let D = readDiary();
 
-    // ==========================
-    //  Límite 7 min/día (por día local)
-    // ==========================
+    function upsertToday(partial){
+      const k = dayKey();
+      D[k] = Object.assign({date:k, ts: Date.now()}, D[k]||{}, partial||{});
+      writeDiary(D);
+    }
+
+    // ===== Límite 7 min/día
     const DAILY_LIMIT_MS = 7*60*1000;
-    function readUsage(){ try{ return JSON.parse(localStorage.getItem('usage_by_day')||'{}'); }catch{ return {}; } }
-    function writeUsage(o){ localStorage.setItem('usage_by_day', JSON.stringify(o)); }
-    let usage = readUsage();
-    let sessionStart = null;
+    const readUsage=()=>{try{return JSON.parse(localStorage.getItem('usage_by_day')||'{}')}catch{return{}}};
+    const writeUsage=(o)=>localStorage.setItem('usage_by_day',JSON.stringify(o));
+    let usage = readUsage(); let sessionStart=null;
 
-    function onVisible(){ sessionStart = nowTZ(); }
+    function onVisible(){ sessionStart=nowTZ(); }
     function onHidden(){
       if(!sessionStart) return;
-      const spent = nowTZ() - sessionStart;
-      const k = dayKey();
-      usage[k] = (usage[k]||0) + (spent>0?spent:0);
-      writeUsage(usage);
-      sessionStart = null;
-      S.last_active = Date.now(); write(S);
+      const spent = nowTZ()-sessionStart;
+      const k=dayKey(); usage[k]=(usage[k]||0)+(spent>0?spent:0);
+      writeUsage(usage); sessionStart=null; S.last_active=Date.now(); write(S);
     }
-    document.addEventListener('visibilitychange', ()=> document.visibilityState==='visible'?onVisible():onHidden());
+    document.addEventListener('visibilitychange',()=>document.visibilityState==='visible'?onVisible():onHidden());
     if(document.visibilityState==='visible') onVisible();
-    window.addEventListener('pagehide', onHidden);
-    window.addEventListener('beforeunload', onHidden);
-
-    function remainingMsToday(){ return DAILY_LIMIT_MS - (readUsage()[dayKey()]||0); }
-
-    function mostrarLimite(){ // usado por el chequeo periódico
-      const m = document.getElementById('limit-modal');
-      m.style.display='flex';
-    }
+    window.addEventListener('pagehide',onHidden); window.addEventListener('beforeunload',onHidden);
+    const remainingMsToday=()=>DAILY_LIMIT_MS-(readUsage()[dayKey()]||0);
+    const showLimit=()=>{document.getElementById('limit-modal').style.display='flex';};
     document.getElementById('limit-ok').onclick=()=>document.getElementById('limit-modal').style.display='none';
+    setInterval(()=>{ if(sessionStart && remainingMsToday()<=0){ onHidden(); showLimit(); } },1000);
 
-    setInterval(()=>{
-      if(sessionStart && remainingMsToday()<=0){
-        onHidden(); mostrarLimite();
-      }
-    },1000);
-
-    // ==========================
-    //  Ventanas y overlays
-    // ==========================
-    function showWindowMessage(msg){
-      document.getElementById('window-msg').textContent = msg;
-      document.getElementById('window-overlay').style.display='flex';
-    }
+    // ===== Ventanas
+    function showWindowMessage(msg){ document.getElementById('window-msg').textContent=msg; document.getElementById('window-overlay').style.display='flex'; }
     document.getElementById('window-ok').onclick=()=>document.getElementById('window-overlay').style.display='none';
-
     function enforceWindows(){
-      const med = document.getElementById('sec-med');
-      const noc = document.getElementById('sec-noc');
-      // Mediodía solo 12-14
-      med.classList.toggle('hide', !isBetweenLocal(12,14));
-      // Noche solo 20-22
-      noc.classList.toggle('hide', !isBetweenLocal(20,22));
+      document.getElementById('sec-med').classList.toggle('hide', !isBetweenLocal(12,14));
+      document.getElementById('sec-noc').classList.toggle('hide', !isBetweenLocal(20,22));
     }
-    enforceWindows();
-    setInterval(enforceWindows, 30_000);
+    enforceWindows(); setInterval(enforceWindows,30000);
 
-    // ==========================
-    //  Autodestrucción a 30 días
-    // ==========================
-    const daysSinceInstall = Math.floor((Date.now() - (S.install_ts||Date.now()))/86400000);
+    // ===== Autodestrucción día 30
+    const daysSinceInstall = Math.floor((Date.now()-(S.install_ts||Date.now()))/86400000);
     if(daysSinceInstall>=30){
-      const d = document.getElementById('destroy-overlay');
-      d.style.display='flex';
-      document.getElementById('exp-from-destroy').onclick = ()=>exportar();
-      document.getElementById('destroy-ok').onclick = ()=>{ d.style.display='none'; };
+      const ov=document.getElementById('destroy-overlay');
+      ov.style.display='flex';
+      document.getElementById('exp-from-destroy').onclick=()=>export30JSON();
+      document.getElementById('destroy-ok').onclick=()=>{ ov.style.display='none'; };
     }
 
-    // ==========================
-    //  Resiliencia: 2 días sin uso
-    // ==========================
+    // ===== Resiliencia (2 días sin uso)
     if(S.last_active){
-      const daysIdle = Math.floor((Date.now()-S.last_active)/86400000);
-      if(daysIdle>=2){
-        // Empujar a ROE directamente
-        abrir('#modal-roe');
-      }
+      const idle = Math.floor((Date.now()-S.last_active)/86400000);
+      if(idle>=2){ abrir('#modal-roe'); }
     }
 
-    // ==========================
-    //  UI helpers
-    // ==========================
-    const $ = sel => document.querySelector(sel);
-    function abrir(id){ const n=$(id); if(n) n.style.display='flex'; }
-    function cerrar(id){ const n=$(id); if(n) n.style.display='none'; }
+    // ===== Helpers UI
+    const $ = s=>document.querySelector(s);
+    const abrir = id => { const n=$(id); if(n) n.style.display='flex'; };
+    const cerrar = id => { const n=$(id); if(n) n.style.display='none'; };
     document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>cerrar(b.getAttribute('data-close')));
 
-    // ==========================
-    //  Carga inicial a inputs
-    // ==========================
+    // ===== Carga inicial
     function loadInputs(){
-      $('#p1').value = S.p1||'';
-      $('#p2').value = S.p2||'';
-      $('#p3').value = S.p3||'';
-      $('#partner').value = S.partner||'';
-      $('#mom1').value = S.mom1||'';
-      $('#mom2').value = S.mom2||'';
-      $('#ritualSel').value = S.ritualSel||'';
-      $('#ritualExtra').value = S.ritualExtra||'';
-      $('#tz').value = localStorage.getItem('tz')||'';
-      // checks noche
-      $('#chk1').checked = !!S.chk1;
-      $('#chk2').checked = !!S.chk2;
-      $('#chk3').checked = !!S.chk3;
-      $('#reflex').value = S.reflex||'';
-      // badges
-      $('#badges').textContent = `Día ${daysSinceInstall+1} · Restan ${(Math.max(0,remainingMsToday())/60000).toFixed(1)} min`;
+      $('#p1').value=S.p1||''; $('#p2').value=S.p2||''; $('#p3').value=S.p3||'';
+      $('#partner').value=S.partner||''; $('#mom1').value=S.mom1||''; $('#mom2').value=S.mom2||'';
+      $('#ritualSel').value=S.ritualSel||''; $('#ritualExtra').value=S.ritualExtra||'';
+      $('#tz').value=localStorage.getItem('tz')||'';
+      $('#chk1').checked=!!S.chk1; $('#chk2').checked=!!S.chk2; $('#chk3').checked=!!S.chk3;
+      $('#reflex').value=S.reflex||'';
+      $('#badges').textContent=`Día ${daysSinceInstall+1} · Restan ${(Math.max(0,remainingMsToday())/60000).toFixed(1)} min`;
     }
     loadInputs();
 
-    // ==========================
-    //  Guardado básico
-    // ==========================
+    // ===== Guardado
     function save(){
-      S.p1 = $('#p1').value.trim();
-      S.p2 = $('#p2').value.trim();
-      S.p3 = $('#p3').value.trim();
-      S.partner = $('#partner').value.trim();
-      S.mom1 = $('#mom1').value.trim();
-      S.mom2 = $('#mom2').value.trim();
-      S.ritualSel = $('#ritualSel').value;
-      S.ritualExtra = $('#ritualExtra').value.trim();
-      S.last_active = Date.now();
-      write(S);
+      S.p1=$('#p1').value.trim(); S.p2=$('#p2').value.trim(); S.p3=$('#p3').value.trim();
+      S.partner=$('#partner').value.trim();
+      S.mom1=$('#mom1').value.trim(); S.mom2=$('#mom2').value.trim();
+      S.ritualSel=$('#ritualSel').value; S.ritualExtra=$('#ritualExtra').value.trim();
+      S.last_active=Date.now(); write(S);
+      upsertToday({p1:S.p1,p2:S.p2,p3:S.p3,mom1:S.mom1,mom2:S.mom2,ritualSel:S.ritualSel,ritualExtra:S.ritualExtra});
       loadInputs();
     }
 
-    // ==========================
-    //  Botones principales
-    // ==========================
-    $('#btn-deal').onclick = ()=>abrir('#modal-deal');
-    $('#btn-momentos').onclick = ()=>abrir('#modal-momentos');
-    $('#btn-ritual').onclick = ()=>abrir('#modal-ritual');
-    $('#btn-guardar').onclick = ()=>{ save(); alert('Guardado ✓'); };
-
-    // DEAL aplica notas a campos como recordatorio (no pisa el texto)
-    $('#deal-ok').onclick = ()=>{
-      const d = [$('#dealD').value,$('#dealE').value,$('#dealA').value,$('#dealL').value].filter(Boolean).join(' · ');
-      if (d){
-        S.deal = d; write(S);
-        alert('DEAL aplicado como nota mental. Usalo para simplificar tus 3 puntos.');
-      }
+    // ===== Botones Mañana
+    $('#btn-deal').onclick=()=>abrir('#modal-deal');
+    $('#deal-ok').onclick=()=>{
+      const d=[$('#dealD').value,$('#dealE').value,$('#dealA').value,$('#dealL').value].filter(Boolean).join(' · ');
+      if(d){ S.deal=d; write(S); alert('DEAL aplicado como nota mental.'); }
       cerrar('#modal-deal');
     };
+    $('#btn-momentos').onclick=()=>abrir('#modal-momentos');
+    $('#mom-ok').onclick=()=>{ save(); cerrar('#modal-momentos'); };
+    $('#btn-ritual').onclick=()=>abrir('#modal-ritual');
+    $('#ritual-ok').onclick=()=>{ save(); cerrar('#modal-ritual'); };
+    $('#btn-guardar').onclick=()=>{ save(); alert('Guardado ✓'); };
 
-    // ROE
-    $('#desconc-med').onclick = ()=>abrir('#modal-roe');
-    $('#roe-hacer').onclick = ()=>{
-      const micro = $('#roe3').value.trim();
-      if(micro){ alert(`Hacelo ahora 5’: ${micro}`); }
-      cerrar('#modal-roe');
-    };
-    $('#roe-reprog').onclick = ()=>{
-      alert('Reprogramado como micro-pasos. Ajustá en la mañana.');
-      cerrar('#modal-roe');
-    };
-
-    // Momentos / Ritual
-    $('#mom-ok').onclick = ()=>{ save(); cerrar('#modal-momentos'); };
-    $('#ritual-ok').onclick = ()=>{ save(); cerrar('#modal-ritual'); };
-
-    // Mediodía
-    $('#ok-med').onclick = ()=>alert('Perfecto. Volvé al foco.');
-    $('#ajustar-med').onclick = ()=>abrir('#modal-deal');
-    $('#ver-tarjeta').onclick = ()=>generarTarjeta(false);
-
-    // Noche
-    $('#chk1').onchange = e=>{ S.chk1=e.target.checked; write(S); };
-    $('#chk2').onchange = e=>{ S.chk2=e.target.checked; write(S); };
-    $('#chk3').onchange = e=>{ S.chk3=e.target.checked; write(S); };
-    $('#reflex').oninput = e=>{ S.reflex=e.target.value; write(S); };
-    $('#celebrar').onclick = ()=>{
-      alert('Bien hecho. Día cerrado.');
-      // opción: podrías resetear checks acá
-    };
-    $('#tarjeta-dia').onclick = ()=>generarTarjeta(true);
-
-    // Compartir (máx. 2 al día)
-    function shareCount(){ try{ return JSON.parse(localStorage.getItem('share_by_day')||'{}'); }catch{return{}} }
-    function incShare(){
-      const m=shareCount(),k=dayKey(); m[k]=(m[k]||0)+1; localStorage.setItem('share_by_day',JSON.stringify(m)); return m[k];
-    }
-    $('#btn-compartir').onclick = async ()=>{
-      const m=shareCount(),k=dayKey(); if((m[k]||0)>=2){ return alert('Límite de 2 envíos diarios.'); }
+    // Compartir (2 por día)
+    function shareCount(){try{return JSON.parse(localStorage.getItem('share_by_day')||'{}')}catch{return{}}}
+    function incShare(){const m=shareCount(),k=dayKey(); m[k]=(m[k]||0)+1; localStorage.setItem('share_by_day',JSON.stringify(m)); return m[k];}
+    $('#btn-compartir').onclick=async()=>{
+      const m=shareCount(),k=dayKey(); if((m[k]||0)>=2) return alert('Límite de 2 envíos diarios.');
       save();
-      const text = `Tarjeta 3-2-1
+      const text=`Tarjeta 3-2-1
 • Estratégica: ${S.p1||''}
 • Operativa: ${S.p2||''}
 • Bienestar: ${S.p3||''}
 Momentos: ${S.mom1||''} | ${S.mom2||''}
 Ritual: ${S.ritualSel||''} ${S.ritualExtra||''}`.trim();
-      try{
-        if(navigator.share){ await navigator.share({title:'3-2-1',text}); incShare(); }
-        else{
-          await navigator.clipboard.writeText(text);
-          incShare(); alert('Copiado al portapapeles. Pegalo en tu chat/correo.');
-        }
-      }catch(e){ /* cancelado */ }
+      try{ if(navigator.share){await navigator.share({title:'3-2-1',text}); incShare();}
+      else{ await navigator.clipboard.writeText(text); incShare(); alert('Copiado al portapapeles.'); } }catch(e){}
     };
 
-    // Tarjeta imprimible
-    $('#btn-tarjeta').onclick = ()=>generarTarjeta(false);
+    // Tarjeta imprimible (sin <script> dentro del string)
+    $('#btn-tarjeta').onclick=()=>generarTarjeta(false);
     function generarTarjeta(conLogro){
       save();
-      const d = `
+      const html = `
 <html><head><meta charset="utf-8"><title>Tarjeta 3-2-1</title>
 <style>body{font-family:system-ui,sans-serif;padding:24px;background:#f8fafc;color:#0f172a}
 .t{background:#fff;border-radius:16px;padding:24px;box-shadow:0 6px 24px rgba(0,0,0,.08);max-width:560px;margin:auto}
-h2{margin-top:0} .item{margin:12px 0} .lbl{color:#64748b;font-size:14px}</style></head>
+h2{margin-top:0}.item{margin:12px 0}.lbl{color:#64748b;font-size:14px}</style></head>
 <body><div class="t">
   <h2>Tarjeta 3-2-1</h2>
   <div class="item"><div class="lbl">Estratégica</div><div><strong>${S.p1||''}</strong></div></div>
@@ -495,68 +375,97 @@ h2{margin-top:0} .item{margin:12px 0} .lbl{color:#64748b;font-size:14px}</style>
   <div class="item"><div class="lbl">Momentos</div><div>${S.mom1||''} · ${S.mom2||''}</div></div>
   <div class="item"><div class="lbl">Ritual</div><div>${S.ritualSel||''} ${S.ritualExtra||''}</div></div>
   ${conLogro?`<div class="item"><div class="lbl">Revisión</div><div>${(S.reflex||'').replace(/\n/g,'<br>')}</div></div>`:''}
-</div>
-<script>window.print()<\/script>
-</body></html>`;
-      const w = window.open('','_blank'); w.document.write(d); w.document.close();
+</div></body></html>`;
+      const w=window.open('','_blank'); w.document.open(); w.document.write(html); w.document.close();
+      w.onload=()=>{ try{w.focus(); w.print();}catch(e){} };
+      setTimeout(()=>{ try{w.focus(); w.print();}catch(e){} },400);
     }
 
-    // Exportar/Importar
-    function exportar(){
-      const blob = new Blob([JSON.stringify({S,usage:readUsage()},null,2)],{type:'application/json'});
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob); a.download = `s321-backup-${dayKey()}.json`; a.click();
-      URL.revokeObjectURL(a.href);
+    // ===== Mediodía (ventana 12–14)
+    function guardMed(handler){
+      return ()=>{ if(!isBetweenLocal(12,14)) return showWindowMessage('Mediodía funciona 12:00–14:00 (hora local).'); handler(); };
     }
-    $('#btn-export').onclick = exportar;
-    $('#btn-import').onclick = async ()=>{
-      const f = document.createElement('input'); f.type='file'; f.accept='application/json';
-      f.onchange = async ()=>{
-        const file = f.files[0]; if(!file) return;
-        const data = JSON.parse(await file.text());
+    $('#ok-med').onclick=guardMed(()=>alert('Perfecto. Volvé al foco.'));
+    $('#ajustar-med').onclick=guardMed(()=>abrir('#modal-deal'));
+    $('#desconc-med').onclick=guardMed(()=>abrir('#modal-roe'));
+    $('#ver-tarjeta').onclick=guardMed(()=>generarTarjeta(false));
+
+    // ROE
+    $('#roe-hacer').onclick=()=>{ const micro=$('#roe3').value.trim(); if(micro) alert(`Hacelo ahora 5’: ${micro}`); cerrar('#modal-roe'); };
+    $('#roe-reprog').onclick=()=>{ alert('Reprogramado como micro-pasos. Ajustá en la mañana.'); cerrar('#modal-roe'); };
+
+    // ===== Noche (ventana 20–22)
+    function guardNoc(handler){
+      return ()=>{ if(!isBetweenLocal(20,22)) return showWindowMessage('Noche funciona 20:00–22:00 (hora local).'); handler(); };
+    }
+    $('#chk1').onchange=e=>{ S.chk1=e.target.checked; write(S); upsertToday({chk1:S.chk1}); };
+    $('#chk2').onchange=e=>{ S.chk2=e.target.checked; write(S); upsertToday({chk2:S.chk2}); };
+    $('#chk3').onchange=e=>{ S.chk3=e.target.checked; write(S); upsertToday({chk3:S.chk3}); };
+    $('#reflex').oninput=e=>{ S.reflex=e.target.value; write(S); upsertToday({reflex:S.reflex}); };
+    $('#celebrar').onclick=guardNoc(()=>{ alert('Bien hecho. Día cerrado.'); upsertToday({closed:true}); });
+    $('#tarjeta-dia').onclick=guardNoc(()=>generarTarjeta(true));
+
+    // ===== Exportar/Importar (snapshot) y 30 días
+    function download(name, text, type='application/json'){
+      const blob=new Blob([text],{type}); const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob); a.download=name; a.click(); URL.revokeObjectURL(a.href);
+    }
+    function exportar(){
+      const payload={S, diary:readDiary(), usage:readUsage(), tz:TZ, exported_at:new Date().toISOString()};
+      download(`s321-snapshot-${dayKey()}.json`, JSON.stringify(payload,null,2));
+    }
+    $('#btn-export').onclick=exportar;
+
+    $('#btn-import').onclick=async()=>{
+      const f=document.createElement('input'); f.type='file'; f.accept='application/json';
+      f.onchange=async()=>{
+        const file=f.files[0]; if(!file) return;
+        const data=JSON.parse(await file.text());
         if(data.S){ S=data.S; write(S); }
+        if(data.diary){ D=data.diary; writeDiary(D); }
         if(data.usage){ writeUsage(data.usage); usage=data.usage; }
         loadInputs(); alert('Importado ✓');
       };
       f.click();
     };
 
-    // Guardar zona horaria
-    $('#save-tz').onclick = ()=>{
-      const val = $('#tz').value.trim();
-      if(val) localStorage.setItem('tz',val); else localStorage.removeItem('tz');
-      location.reload();
-    };
-
-    // ==========================
-    //  Bloqueo por ventanas (UX)
-    // ==========================
-    function guardWithWindows(handler, windowCheck, msg){
-      return function(){
-        if(!windowCheck()){ showWindowMessage(msg); return; }
-        handler();
-      }
+    function last30Keys(){
+      const keys=Object.keys(readDiary()).sort(); // yyyy-mm-dd asc
+      const today=dayKey();
+      return keys.filter(k=> {
+        const d=new Date(k+'T00:00:00'); // local naive
+        const t=new Date(today+'T00:00:00');
+        return (t-d)/86400000 <= 29 && (t-d)>=0; // últimos 30 días incluyendo hoy
+      });
     }
-    // Aplicar a botones de mediodía y noche:
-    $('#ok-med').onclick = guardWithWindows($('#ok-med').onclick, ()=>isBetweenLocal(12,14), 'Mediodía funciona de 12:00 a 14:00 (hora local).');
-    $('#ajustar-med').onclick = guardWithWindows($('#ajustar-med').onclick, ()=>isBetweenLocal(12,14), 'Mediodía funciona de 12:00 a 14:00 (hora local).');
-    $('#desconc-med').onclick = guardWithWindows($('#desconc-med').onclick, ()=>isBetweenLocal(12,14), 'Mediodía funciona de 12:00 a 14:00 (hora local).');
-    $('#ver-tarjeta').onclick = guardWithWindows($('#ver-tarjeta').onclick, ()=>isBetweenLocal(12,14), 'Mediodía funciona de 12:00 a 14:00 (hora local).');
+    function export30JSON(){
+      const k=last30Keys(); const out=k.map(key=>Object.assign({date:key}, D[key]||{}));
+      const payload={range:`${k[0]||''}..${k[k.length-1]||''}`, days: out.length, data: out};
+      download(`s321-30dias-${dayKey()}.json`, JSON.stringify(payload,null,2));
+    }
+    function export30TXT(){
+      const k=last30Keys();
+      let txt=`Sistema 3-2-1 – últimos 30 días\nZona: ${TZ}\nGenerado: ${new Date().toISOString()}\n\n`;
+      k.forEach(key=>{
+        const x=D[key]||{};
+        txt += `# ${key}\n- Estratégica: ${x.p1||''}\n- Operativa: ${x.p2||''}\n- Bienestar: ${x.p3||''}\n- Momentos: ${x.mom1||''} | ${x.mom2||''}\n- Ritual: ${x.ritualSel||''} ${x.ritualExtra||''}\n- Checks: E:${x.chk1?'✓':'-'} O:${x.chk2?'✓':'-'} B:${x.chk3?'✓':'-'}\n- Revisión: ${(x.reflex||'').replace(/\n/g,' ')}\n\n`;
+      });
+      download(`s321-30dias-${dayKey()}.txt`, txt, 'text/plain');
+    }
+    $('#btn-export30').onclick=export30JSON;
+    $('#btn-export30txt').onclick=export30TXT;
 
-    $('#celebrar').onclick = guardWithWindows($('#celebrar').onclick, ()=>isBetweenLocal(20,22), 'Noche funciona de 20:00 a 22:00 (hora local).');
-    $('#tarjeta-dia').onclick = guardWithWindows($('#tarjeta-dia').onclick, ()=>isBetweenLocal(20,22), 'Noche funciona de 20:00 a 22:00 (hora local).');
+    // ===== Guardar zona horaria
+    $('#save-tz').onclick=()=>{ const v=$('#tz').value.trim(); if(v) localStorage.setItem('tz',v); else localStorage.removeItem('tz'); location.reload(); };
 
-    // ==========================
-    //  SW + banner de actualización
-    // ==========================
+    // ===== SW + banner actualización
     if('serviceWorker' in navigator){
       window.addEventListener('load', async ()=>{
         try{
-          const reg = await navigator.serviceWorker.register('sw.js?v=7');
-          // Banner si hay nuevo SW
+          const reg = await navigator.serviceWorker.register('sw.js?v=10');
           let refreshing=false;
           navigator.serviceWorker.addEventListener('controllerchange', ()=>{
-            if (refreshing) return; refreshing=true;
+            if(refreshing) return; refreshing=true;
             document.getElementById('update-banner').style.display='block';
           });
           document.getElementById('btn-refresh').onclick=()=>location.reload();
